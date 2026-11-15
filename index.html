@@ -1,0 +1,546 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="小小學習島：給幼兒的注音、英文與數學互動學習空間。" />
+  <title>小小學習島｜幼稚園互動學習</title>
+  <style>
+    :root {
+      --ink: #19253a;
+      --muted: #66738a;
+      --paper: #f8f7f2;
+      --white: #fffefb;
+      --navy: #182844;
+      --navy-2: #263b61;
+      --coral: #ff755f;
+      --yellow: #ffd35a;
+      --mint: #72d5be;
+      --sky: #79c8e8;
+      --lavender: #c7b9f4;
+      --line: rgba(25, 37, 58, .12);
+      --shadow: 0 22px 45px rgba(25, 37, 58, .12);
+      --radius-lg: 28px;
+      --radius-md: 18px;
+      --radius-sm: 12px;
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      color: var(--ink);
+      background: var(--paper);
+      font-family: "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", system-ui, sans-serif;
+      line-height: 1.5;
+    }
+    button { font: inherit; }
+    button:focus-visible { outline: 4px solid rgba(121, 200, 232, .8); outline-offset: 3px; }
+
+    .star-count { display: inline-flex; align-items: center; gap: 6px; background: var(--navy); color: white; border-radius: 999px; padding: 9px 14px; font-weight: 900; font-size: 13px; }
+    .star-count b { color: var(--yellow); }
+
+    .lab-header { background: var(--navy); color: white; padding: 22px 26px; display: flex; justify-content: space-between; align-items: center; gap: 16px; }
+    .lab-header h2 { margin: 0; font-size: 24px; letter-spacing: -.06em; }
+    .lab-header p { margin: 5px 0 0; color: rgba(255,255,255,.65); font-size: 13px; }
+    .lab-body { padding: 26px; }
+    .lab-layout { display: grid; grid-template-columns: .8fr 1.2fr; gap: 28px; align-items: stretch; }
+    .lesson-intro { background: #f2f2ec; border-radius: 20px; padding: 24px; display: flex; flex-direction: column; justify-content: space-between; min-height: 340px; }
+    .lesson-intro .big-symbol { font-size: 94px; line-height: 1; letter-spacing: -.1em; margin: 20px 0; color: var(--coral); font-weight: 1000; }
+    .lesson-intro h3 { margin: 0; font-size: 22px; letter-spacing: -.05em; }
+    .lesson-intro p { color: var(--muted); font-size: 14px; margin: 8px 0 0; }
+    .listen-btn { align-self: start; border: 0; background: var(--navy); color: white; padding: 11px 15px; border-radius: 12px; cursor: pointer; font-weight: 900; }
+    .listen-btn:hover { background: var(--coral); }
+    .activity { min-width: 0; }
+    .activity-title { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; }
+    .activity-title h3 { margin: 0; font-size: 19px; letter-spacing: -.05em; }
+    .activity-title span { font-size: 11px; color: var(--muted); }
+    .mini-label { display: block; font-size: 11px; color: var(--muted); font-weight: 900; letter-spacing: .1em; margin: 17px 0 8px; }
+    .chip-row { display: flex; flex-wrap: wrap; gap: 8px; }
+    .choice, .letter-card, .number-card { border: 1px solid var(--line); background: white; border-radius: 12px; min-width: 44px; min-height: 42px; padding: 7px 12px; cursor: pointer; color: var(--ink); font-weight: 900; transition: .18s ease; }
+    .choice:hover, .letter-card:hover, .number-card:hover { border-color: var(--coral); color: var(--coral); transform: translateY(-2px); }
+    .choice.selected, .letter-card.selected, .number-card.selected { background: var(--coral); color: white; border-color: var(--coral); }
+    .build-box { display: flex; align-items: center; gap: 7px; background: #f2f2ec; border-radius: 14px; padding: 13px 15px; min-height: 58px; font-size: 25px; font-weight: 1000; }
+    .build-box .tone-dot { margin-left: auto; font-size: 13px; background: var(--yellow); border-radius: 99px; padding: 5px 9px; color: var(--navy); }
+    .action-row { display: flex; align-items: center; gap: 10px; margin-top: 18px; flex-wrap: wrap; }
+    .primary-btn { border: 0; background: var(--coral); color: white; padding: 12px 17px; border-radius: 12px; cursor: pointer; font-weight: 1000; box-shadow: 0 5px 0 #d75748; }
+    .primary-btn:hover { transform: translateY(-2px); box-shadow: 0 7px 0 #d75748; }
+    .ghost-btn { border: 1px solid var(--line); background: white; color: var(--ink); padding: 11px 15px; border-radius: 12px; cursor: pointer; font-weight: 900; }
+    .feedback { min-height: 26px; font-size: 13px; font-weight: 900; color: var(--muted); }
+    .feedback.good { color: #239474; } .feedback.bad { color: #d75748; }
+
+    .quiz-card { background: #f2f2ec; border-radius: 18px; padding: 18px; }
+    .quiz-card .question { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 14px; }
+    .quiz-card .question strong { font-size: 22px; letter-spacing: -.05em; }
+    .quiz-card .question small { color: var(--muted); }
+    .word-options { display: grid; grid-template-columns: repeat(3, 1fr); gap: 9px; }
+    .word-option { min-height: 94px; border: 1px solid var(--line); background: white; border-radius: 14px; cursor: pointer; padding: 10px; font-weight: 900; color: var(--ink); }
+    .word-option .pic { display: block; font-size: 34px; line-height: 1.1; margin-bottom: 5px; }
+    .word-option:hover { border-color: var(--sky); transform: translateY(-2px); }
+    .word-option.correct { background: #dff7ee; border-color: var(--mint); } .word-option.wrong { background: #ffe5df; border-color: var(--coral); }
+    .equation { font-size: clamp(34px, 5vw, 58px); font-weight: 1000; letter-spacing: -.1em; text-align: center; padding: 17px; background: #fff1bd; border-radius: 16px; color: var(--navy); }
+    .answer-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-top: 16px; }
+    .answer-btn { border: 1px solid var(--line); background: white; border-radius: 13px; padding: 14px; font-size: 22px; cursor: pointer; font-weight: 1000; color: var(--ink); }
+    .answer-btn:hover { background: var(--yellow); border-color: var(--yellow); }
+    .answer-btn.correct { background: #dff7ee; border-color: var(--mint); } .answer-btn.wrong { background: #ffe5df; border-color: var(--coral); }
+
+    @media (max-width: 760px) {
+      .lab-layout { grid-template-columns: 1fr; }
+      .lesson-intro { min-height: 210px; gap: 15px; }
+      .lesson-intro .big-symbol { font-size: 70px; margin: 12px 0; }
+      .lab-body, .lab-header { padding: 16px; }
+    }
+  </style>
+  <link rel="stylesheet" href="island.css" />
+</head>
+<body>
+  <header class="island-header">
+    <a class="island-brand" href="./index.html"><span aria-hidden="true">✦</span> 小小學習島</a>
+    <div class="star-count" role="status">⭐ <b id="starCount">0</b> 顆星</div>
+  </header>
+
+  <main class="atlas">
+    <div class="atlas-toolbar">
+      <div><h1>島嶼全景</h1><p>點一塊地圖，選今天想玩的學習站。</p></div>
+      <nav class="view-switch" aria-label="島嶼檢視">
+        <button type="button" data-map-mode="explore" aria-controls="mapDrawer" aria-pressed="true">◉ 全景</button>
+        <button type="button" data-map-mode="index" aria-controls="mapDrawer" aria-pressed="false">☰ 清單</button>
+        <button type="button" data-map-mode="log" aria-controls="mapDrawer" aria-pressed="false">◷ 日誌</button>
+        <button type="button" data-map-mode="help" aria-controls="mapDrawer" aria-pressed="false">? 說明</button>
+      </nav>
+    </div>
+
+    <div class="atlas-frame">
+      <section class="map-stage" id="mapStage" aria-label="互動島嶼地圖">
+        <div class="map-scene" id="mapScene">
+          <div class="water-rings" aria-hidden="true"></div>
+          <div class="route route-one" aria-hidden="true"></div>
+          <div class="route route-two" aria-hidden="true"></div>
+          <span class="water-mark mark-one" aria-hidden="true">≈</span>
+          <span class="water-mark mark-two" aria-hidden="true">≈</span>
+          <span class="water-mark mark-three" aria-hidden="true">≈</span>
+          <button class="map-tile tile-zh" type="button" data-station="zh" aria-pressed="false">
+            <span class="tile-land" aria-hidden="true"></span>
+            <span class="tile-art" aria-hidden="true">🏠</span>
+            <span class="tile-name"><b>ㄅ</b> 注音小屋</span>
+          </button>
+          <button class="map-tile tile-abc" type="button" data-station="abc" aria-pressed="false">
+            <span class="tile-land" aria-hidden="true"></span>
+            <span class="tile-art" aria-hidden="true">🌲<span>🌳</span></span>
+            <span class="tile-name"><b>Ab</b> ABC 森林</span>
+          </button>
+          <button class="map-tile tile-math" type="button" data-station="math" aria-pressed="false">
+            <span class="tile-land" aria-hidden="true"></span>
+            <span class="tile-art" aria-hidden="true">⛰️</span>
+            <span class="tile-name"><b>＋</b> 數字山</span>
+          </button>
+        </div>
+        <div class="map-status" id="mapLiveText" role="status">選一座學習站</div>
+        <div class="map-controls" role="group" aria-label="縮放地圖">
+          <button type="button" id="zoomOut" aria-label="縮小地圖">−</button>
+          <button type="button" id="resetMap" aria-label="回到全景" title="回到全景">⌂</button>
+          <button type="button" id="zoomIn" aria-label="放大地圖">＋</button>
+        </div>
+      </section>
+      <aside class="atlas-panel" id="mapDrawer" aria-labelledby="panelTitle"></aside>
+    </div>
+  </main>
+
+  <dialog class="lesson-dialog" id="lab" aria-labelledby="labTitle">
+    <div class="lab-header">
+      <div><h2 id="labTitle"></h2><p id="labSubtitle"></p></div>
+      <form method="dialog"><button class="lesson-close" aria-label="關閉練習，回地圖">✕</button></form>
+    </div>
+    <div class="lab-body" id="labBody"></div>
+  </dialog>
+
+  <script>
+    const state = {
+      tab: null, mapMode: 'explore', visits: [], earned: new Set(),
+      zhInitial: 'ㄅ', zhFinal: 'ㄚ', zhTone: '一聲', zhQuiz: 0,
+      abcLetter: 'A', equation: null
+    };
+    const $ = (selector) => document.querySelector(selector);
+    const $$ = (selector) => [...document.querySelectorAll(selector)];
+
+    const zhInitials = ['ㄅ','ㄆ','ㄇ','ㄈ','ㄉ','ㄊ','ㄋ','ㄌ'];
+    const zhFinals = ['ㄚ','ㄛ','ㄜ','ㄞ','ㄟ','ㄠ','ㄡ','ㄢ','ㄧ','ㄨ'];
+    const zhTones = ['一聲','二聲','三聲','四聲'];
+    const zhExamples = [
+      { initial:'ㄅ', final:'ㄚ', tone:0, word:'八', clue:'八隻小鴨' },
+      { initial:'ㄆ', final:'ㄧ', tone:1, word:'皮', clue:'皮球' },
+      { initial:'ㄇ', final:'ㄚ', tone:0, word:'媽', clue:'媽媽' },
+      { initial:'ㄈ', final:'ㄨ', tone:1, word:'福', clue:'福氣' },
+      { initial:'ㄉ', final:'ㄚ', tone:3, word:'大', clue:'大象' },
+      { initial:'ㄊ', final:'ㄨ', tone:2, word:'土', clue:'土壤' },
+      { initial:'ㄋ', final:'ㄧ', tone:2, word:'你', clue:'你好' },
+      { initial:'ㄌ', final:'ㄨ', tone:3, word:'鹿', clue:'小鹿' }
+    ];
+    const abcData = {
+      A: [{word:'Apple', pic:'🍎'}, {word:'Ant', pic:'🐜'}, {word:'Airplane', pic:'✈️'}],
+      B: [{word:'Ball', pic:'⚽'}, {word:'Bear', pic:'🐻'}, {word:'Banana', pic:'🍌'}],
+      C: [{word:'Cat', pic:'🐱'}, {word:'Car', pic:'🚗'}, {word:'Cake', pic:'🍰'}],
+      D: [{word:'Dog', pic:'🐶'}, {word:'Duck', pic:'🦆'}, {word:'Drum', pic:'🥁'}],
+      E: [{word:'Egg', pic:'🥚'}, {word:'Elephant', pic:'🐘'}, {word:'Eraser', pic:'🧽'}],
+      F: [{word:'Fish', pic:'🐟'}, {word:'Frog', pic:'🐸'}, {word:'Flower', pic:'🌼'}],
+      G: [{word:'Grapes', pic:'🍇'}], H: [{word:'Hat', pic:'🎩'}], I: [{word:'Ice', pic:'🧊'}],
+      J: [{word:'Juice', pic:'🧃'}], K: [{word:'Kite', pic:'🪁'}], L: [{word:'Lion', pic:'🦁'}],
+      M: [{word:'Moon', pic:'🌙'}], N: [{word:'Nest', pic:'🪺'}], O: [{word:'Orange', pic:'🍊'}],
+      P: [{word:'Pig', pic:'🐷'}], Q: [{word:'Queen', pic:'👑'}], R: [{word:'Rabbit', pic:'🐰'}],
+      S: [{word:'Sun', pic:'☀️'}], T: [{word:'Train', pic:'🚂'}], U: [{word:'Umbrella', pic:'☂️'}],
+      V: [{word:'Violin', pic:'🎻'}], W: [{word:'Whale', pic:'🐋'}], X: [{word:'X-ray', pic:'🩻'}],
+      Y: [{word:'Yo-yo', pic:'🪀'}], Z: [{word:'Zebra', pic:'🦓'}]
+    };
+    const equations = [{a:2,op:'＋',b:3,ans:5},{a:6,op:'－',b:2,ans:4},{a:1,op:'＋',b:4,ans:5},{a:8,op:'－',b:3,ans:5},{a:3,op:'＋',b:4,ans:7},{a:9,op:'－',b:5,ans:4}];
+    const stations = {
+      zh: { name: '注音小屋', icon: 'ㄅ', topic: '符號與拼音', description: '選聲符、韻符和聲調，拼出聽到的字。', activities: ['練習聲符和韻符', '聽音選拼音'] },
+      abc: { name: 'ABC 森林', icon: 'Ab', topic: '字母與單字', description: '聽聽英文字母的念法，從圖片找出正確的單字。', activities: ['認識英文大小寫', '配對圖片與單字'] },
+      math: { name: '數字山', icon: '＋', topic: '數字與加減', description: '點數字卡，數一數，再來做加法和減法。', activities: ['認識 0 到 10', '挑戰 10 以內的加減法'] }
+    };
+
+    function speak(text, lang = 'zh-TW') {
+      if (!('speechSynthesis' in window)) return;
+      window.speechSynthesis.cancel();
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.lang = lang; utterance.rate = lang === 'en-US' ? .82 : .78; utterance.pitch = 1.1;
+      window.speechSynthesis.speak(utterance);
+    }
+    function record(message) {
+      state.visits.unshift({ message, time: new Date() });
+      state.visits.length = Math.min(state.visits.length, 24);
+    }
+    function addStar(question) {
+      const key = `${state.tab}:${question}`;
+      if (state.earned.has(key)) return;
+      state.earned.add(key);
+      $('#starCount').textContent = state.earned.size;
+      record(`${stations[state.tab].name}答對一題，獲得一顆星`);
+    }
+    function setFeedback(text, type='') { const el = $('.feedback'); if (!el) return; el.textContent = text; el.className = `feedback ${type}`; }
+    function stationLinks() {
+      return `<div class="station-links">${Object.entries(stations).map(([id, station]) => `
+        <button type="button" class="station-link" data-panel-station="${id}" data-search="${station.activities.join(' ')}">
+          <span class="station-glyph ${id}" aria-hidden="true">${station.icon}</span>
+          <span><strong>${station.name}</strong><small>${station.topic}</small></span><span aria-hidden="true">↗</span>
+        </button>`).join('')}</div>`;
+    }
+
+    function setMapMode(mode, focusPanel = false) {
+      state.mapMode = mode;
+      const station = stations[state.tab];
+      const showStation = mode === 'explore' && station;
+      const titles = { explore: '選一個學習站', index: '學習站清單', log: '學習日誌', help: '怎麼玩？' };
+      const title = showStation ? station.name : titles[mode];
+      const canClose = mode !== 'explore' || showStation;
+      $$('.view-switch button').forEach(button => {
+        button.setAttribute('aria-pressed', String(button.dataset.mapMode === mode));
+      });
+      $$('.map-tile').forEach(button => {
+        button.setAttribute('aria-pressed', String(button.dataset.station === state.tab));
+      });
+      $('#mapLiveText').textContent = station ? `已選擇${station.name}` : '選一座學習站';
+
+      let content = stationLinks();
+      if (showStation) {
+        content = `<p class="panel-description">${station.description}</p>
+          <ul class="station-features">${station.activities.map(activity => `<li>${activity}</li>`).join('')}</ul>
+          <button type="button" class="start-lesson" id="startLesson">開始練習 →</button>`;
+      } else if (mode === 'index') {
+        content = `<input type="search" class="station-search" id="stationSearch" placeholder="搜尋，例如加法" aria-label="搜尋學習站">
+          ${content}<p class="panel-description" id="emptySearch" role="status" hidden>找不到符合的學習站。</p>`;
+      } else if (mode === 'log') {
+        const clock = new Intl.DateTimeFormat('zh-TW', { hour: '2-digit', minute: '2-digit', timeZone: 'Asia/Taipei', hour12: false });
+        content = `<p class="panel-description">本次探險收集了 ${state.earned.size} 顆星。</p>`;
+        content += state.visits.length
+          ? `<ol class="learning-log">${state.visits.map(({ message, time }) =>
+              `<li>${message}<time datetime="${time.toISOString()}">${clock.format(time)}</time></li>`).join('')}</ol>`
+          : '<p class="panel-description">選一站開始，這裡就會留下探險紀錄。</p>';
+      } else if (mode === 'help') {
+        content = '<ol class="station-features"><li>點地圖上的學習站，或從清單選擇。</li><li>按「開始練習」，跟著題目玩。</li><li>答對會得到星星，可以在日誌裡查看。</li></ol><p class="panel-description">拖曳可以移動地圖。按 ＋ 或 − 縮放，按 ⌂ 回到原本的視角。</p>';
+      }
+
+      $('#mapDrawer').innerHTML = `<div class="panel-head"><h2 id="panelTitle" tabindex="-1">${title}</h2>
+        ${canClose ? '<button type="button" class="panel-close" aria-label="回到全景">✕</button>' : ''}</div>${content}`;
+      $$('#mapDrawer [data-panel-station]').forEach(button => {
+        button.onclick = () => selectStation(button.dataset.panelStation, true);
+      });
+      $('#startLesson')?.addEventListener('click', openLesson);
+      $('.panel-close')?.addEventListener('click', () => {
+        state.tab = null;
+        setMapMode('explore');
+        $('[data-map-mode="explore"]').focus();
+      });
+      $('#stationSearch')?.addEventListener('input', event => {
+        const query = event.target.value.trim().toLowerCase();
+        const links = $$('.station-link');
+        links.forEach(link => link.hidden = !`${link.textContent} ${link.dataset.search}`.toLowerCase().includes(query));
+        $('#emptySearch').hidden = links.some(link => !link.hidden);
+      });
+      if (focusPanel) $('#panelTitle').focus();
+    }
+
+    function selectStation(id, fromPanel = false) {
+      state.tab = id;
+      setMapMode('explore', fromPanel || window.matchMedia('(max-width: 760px)').matches);
+    }
+
+    function openLesson() {
+      const station = stations[state.tab];
+      record(`拜訪${station.name}`);
+      $('#labTitle').textContent = station.name;
+      $('#labSubtitle').textContent = station.description;
+      renderLab();
+      $('#lab').showModal();
+      $('#lab').scrollTop = 0;
+    }
+    function renderLab() { if (state.tab === 'zh') renderZh(); else if (state.tab === 'abc') renderAbc(); else renderMath(); }
+    function shuffle(items) {
+      const result = [...items];
+      for (let i = result.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [result[i], result[j]] = [result[j], result[i]];
+      }
+      return result;
+    }
+
+    function notation(example) {
+      return example.initial + example.final + ['', 'ˊ', 'ˇ', 'ˋ'][example.tone];
+    }
+
+    function renderZh() {
+      const target = zhExamples[state.zhQuiz];
+      const selection = {
+        initial: state.zhInitial,
+        final: state.zhFinal,
+        tone: zhTones.indexOf(state.zhTone)
+      };
+      const chip = (type, value, current) => `<button class="choice ${current === value ? 'selected' : ''}" aria-pressed="${current === value}" data-zh-${type}="${value}">${value}</button>`;
+      const options = shuffle([target, ...shuffle(zhExamples.filter(example => example !== target)).slice(0, 2)]);
+      $('#labBody').innerHTML = `
+        <div class="lab-layout">
+          <div class="lesson-intro">
+            <div><div class="big-symbol">${target.word}</div><h3>${target.clue}的「${target.word}」</h3>
+            <p>先聽例字，再選聲符、韻符和聲調。</p></div>
+            <button class="listen-btn" id="speakZh">🔊 聽「${target.word}」</button>
+          </div>
+          <div class="activity">
+            <div class="activity-title"><h3>把「${target.word}」拼出來</h3></div>
+            <div class="build-box" aria-label="目前的拼音">${notation(selection)}<span class="tone-dot">${state.zhTone}</span></div>
+            <span class="mini-label">聲符</span><div class="chip-row">${zhInitials.map(value => chip('initial', value, state.zhInitial)).join('')}</div>
+            <span class="mini-label">韻符</span><div class="chip-row">${zhFinals.map(value => chip('final', value, state.zhFinal)).join('')}</div>
+            <span class="mini-label">聲調</span><div class="chip-row">${zhTones.map(value => chip('tone', value, state.zhTone)).join('')}</div>
+            <div class="action-row"><button class="primary-btn" id="checkZh">檢查拼音</button><button class="ghost-btn" id="newZh">換一個字</button>
+            <div class="feedback" role="status"></div></div>
+          </div>
+        </div>
+        <div class="quiz-card" style="margin-top:22px">
+          <div class="question"><strong>聽音選拼音</strong><button class="ghost-btn" id="listenQuiz">🔊 播放例字</button></div>
+          <div class="chip-row">${options.map(example => `<button class="choice" data-zh-answer="${notation(example)}">${notation(example)}</button>`).join('')}</div>
+          <div class="feedback" role="status" id="zhQuizFeedback"></div>
+        </div>`;
+
+      for (const [type, property] of [['initial', 'zhInitial'], ['final', 'zhFinal'], ['tone', 'zhTone']]) {
+        $$('[data-zh-' + type + ']').forEach(button => {
+          button.onclick = () => {
+            const value = button.getAttribute('data-zh-' + type);
+            state[property] = value;
+            renderZh();
+            $('[data-zh-' + type + '="' + value + '"]').focus({ preventScroll: true });
+          };
+        });
+      }
+      $('#speakZh').onclick = $('#listenQuiz').onclick = () => speak(target.word);
+      $('#checkZh').onclick = () => {
+        if (notation(selection) === notation(target)) {
+          addStar('build:' + target.word);
+          setFeedback(`拼對了！「${target.word}」是 ${notation(target)}。`, 'good');
+          speak(target.word);
+        } else {
+          setFeedback('再聽一次，試著調整聲符、韻符或聲調。', 'bad');
+        }
+      };
+      $('#newZh').onclick = () => {
+        state.zhQuiz = (state.zhQuiz + 1) % zhExamples.length;
+        renderZh();
+        $('#newZh').focus({ preventScroll: true });
+      };
+      $$('[data-zh-answer]').forEach(button => {
+        button.onclick = () => {
+          const right = button.dataset.zhAnswer === notation(target);
+          $$('[data-zh-answer]').forEach(option => option.classList.toggle('selected', option === button));
+          const feedback = $('#zhQuizFeedback');
+          feedback.textContent = right ? `答對了！${notation(target)} 是「${target.word}」。` : '再聽一次，試試另一個拼音。';
+          feedback.className = `feedback ${right ? 'good' : 'bad'}`;
+          if (right) addStar('listen:' + target.word);
+        };
+      });
+    }
+
+    function renderAbc() {
+      const target = state.abcLetter;
+      const letters = Object.keys(abcData);
+      const index = letters.indexOf(target);
+      const answer = abcData[target][0];
+      const options = shuffle([answer, abcData[letters[(index + 1) % letters.length]][0], abcData[letters[(index + 2) % letters.length]][0]]);
+      $('#labBody').innerHTML = `
+        <div class="lab-layout">
+          <div class="lesson-intro">
+            <div><div class="big-symbol">${target}${target.toLowerCase()}</div><h3>字母 ${target}</h3><p>大寫是 ${target}，小寫是 ${target.toLowerCase()}。</p></div>
+            <button class="listen-btn" id="speakAbc">🔊 聽字母 ${target}</button>
+          </div>
+          <div class="activity">
+            <div class="activity-title"><h3>選一個字母</h3></div>
+            <div class="chip-row">${letters.map(letter => `<button class="letter-card ${letter === target ? 'selected' : ''}" aria-pressed="${letter === target}" data-letter="${letter}">${letter}</button>`).join('')}</div>
+            <div class="quiz-card" style="margin-top:16px">
+              <div class="question"><strong>哪個單字從 ${target} 開頭？</strong></div>
+              <div class="word-options">${options.map(option => `<button class="word-option" data-word="${option.word}"><span class="pic" aria-hidden="true">${option.pic}</span>${option.word}</button>`).join('')}</div>
+              <div class="feedback" id="abcFeedback" role="status"></div>
+            </div>
+            <div class="action-row"><button class="ghost-btn" id="nextLetter">下一個字母 →</button></div>
+          </div>
+        </div>`;
+      function chooseLetter(letter, focus) {
+        state.abcLetter = letter;
+        renderAbc();
+        $(focus).focus({ preventScroll: true });
+      }
+      $$('[data-letter]').forEach(button => {
+        button.onclick = () => chooseLetter(button.dataset.letter, `[data-letter="${button.dataset.letter}"]`);
+      });
+      $('#speakAbc').onclick = () => speak(target + '.', 'en-US');
+      $$('[data-word]').forEach(button => {
+        button.onclick = () => {
+          const right = button.dataset.word === answer.word;
+          const feedback = $('#abcFeedback');
+          feedback.textContent = right ? `答對了！${answer.word} 的第一個字母是 ${target}。` : `看看單字的第一個字母，找找 ${target}。`;
+          feedback.className = `feedback ${right ? 'good' : 'bad'}`;
+          button.classList.add(right ? 'correct' : 'wrong');
+          if (right) {
+            addStar(target);
+            speak(answer.word, 'en-US');
+          }
+        };
+      });
+      $('#nextLetter').onclick = () => chooseLetter(letters[(index + 1) % letters.length], '#nextLetter');
+    }
+
+    function renderMath() {
+      state.equation ??= equations[0];
+      const equation = state.equation;
+      const { a, b, op, ans } = equation;
+      const subtract = op === '－';
+      const numbers = Array.from({ length: 11 }, (_, i) => i);
+      const options = shuffle([ans, ...shuffle(numbers.filter(number => number !== ans)).slice(0, 3)]);
+      const apples = value => '🍎'.repeat(value);
+      const picture = subtract
+        ? `<span>${apples(a - b)}</span><s>${apples(b)}</s>`
+        : `<span>${apples(a)}</span><span>＋</span><span>${apples(b)}</span>`;
+      $('#labBody').innerHTML = `
+        <div class="lab-layout">
+          <div class="lesson-intro">
+            <div><div class="big-symbol" id="numberDisplay">1</div><h3>認識數字</h3><p id="numberFeedback" role="status">1 個蘋果 🍎</p></div>
+            <div class="chip-row">${numbers.map(number => `<button class="number-card" data-number="${number}">${number}</button>`).join('')}</div>
+          </div>
+          <div class="activity">
+            <div class="activity-title"><h3>數一數蘋果</h3></div>
+            <div class="equation">${a} ${op} ${b} = ?</div>
+            <div class="counting-pictures" aria-hidden="true">${picture}</div>
+            <div class="answer-grid">${options.map(number => `<button class="answer-btn" data-answer="${number}">${number}</button>`).join('')}</div>
+            <div class="action-row"><button class="ghost-btn" id="speakMath">🔊 聽題目</button><button class="primary-btn" id="newMath">下一題 →</button></div>
+            <div class="feedback" id="mathFeedback" role="status"></div>
+          </div>
+        </div>`;
+      $('#speakMath').onclick = () => speak(`${a} ${subtract ? '減' : '加'} ${b} 等於多少？`);
+      $$('[data-answer]').forEach(button => {
+        button.onclick = () => {
+          const right = Number(button.dataset.answer) === ans;
+          const feedback = $('#mathFeedback');
+          feedback.textContent = right ? `答對了！${a} ${op} ${b} = ${ans}。` : '再數一次蘋果，試試另一個答案。';
+          feedback.className = `feedback ${right ? 'good' : 'bad'}`;
+          button.classList.add(right ? 'correct' : 'wrong');
+          if (right) addStar(`${a}${op}${b}`);
+        };
+      });
+      $('#newMath').onclick = () => {
+        state.equation = equations[(equations.indexOf(equation) + 1) % equations.length];
+        renderMath();
+        $('#newMath').focus({ preventScroll: true });
+      };
+      $$('[data-number]').forEach(button => {
+        button.onclick = () => {
+          const number = Number(button.dataset.number);
+          $('#numberDisplay').textContent = number;
+          $('#numberFeedback').textContent = `${number} 個蘋果 ${apples(number)}`;
+          speak(String(number));
+        };
+      });
+    }
+
+    const mapStage = $('#mapStage');
+    const mapPosition = { zoom: 1, x: 0, y: 0 };
+    let drag = null;
+
+    function paintMap() {
+      const distance = mapPosition.zoom - 1;
+      const limitX = mapStage.clientWidth * (.085 + distance / 2);
+      const limitY = mapStage.clientHeight * (.085 + distance / 2);
+      mapPosition.x = Math.max(-limitX, Math.min(limitX, mapPosition.x));
+      mapPosition.y = Math.max(-limitY, Math.min(limitY, mapPosition.y));
+      $('#mapScene').style.transform = `translate(${mapPosition.x}px, ${mapPosition.y}px) scale(${mapPosition.zoom})`;
+      $('#zoomOut').disabled = mapPosition.zoom <= 0.8;
+      $('#zoomIn').disabled = mapPosition.zoom >= 1.4;
+    }
+
+    function zoomMap(delta) {
+      mapPosition.zoom = Math.max(.8, Math.min(1.4, Math.round((mapPosition.zoom + delta) * 10) / 10));
+      paintMap();
+    }
+
+    function resetMap() {
+      Object.assign(mapPosition, { x: 0, y: 0, zoom: 1 });
+      paintMap();
+    }
+
+    mapStage.addEventListener('pointerdown', event => {
+      if (event.button !== 0 || !event.isPrimary || event.target.closest('button')) return;
+      drag = { id: event.pointerId, x: event.clientX - mapPosition.x, y: event.clientY - mapPosition.y };
+      mapStage.setPointerCapture(event.pointerId);
+      mapStage.classList.add('dragging');
+    });
+    mapStage.addEventListener('pointermove', event => {
+      if (drag?.id !== event.pointerId) return;
+      mapPosition.x = event.clientX - drag.x;
+      mapPosition.y = event.clientY - drag.y;
+      paintMap();
+    });
+    mapStage.addEventListener('lostpointercapture', () => {
+      drag = null;
+      mapStage.classList.remove('dragging');
+    });
+
+    $('#zoomOut').onclick = () => zoomMap(-.2);
+    $('#zoomIn').onclick = () => zoomMap(.2);
+    $('#resetMap').onclick = resetMap;
+    window.addEventListener('resize', paintMap);
+    $$('.map-tile').forEach(button => {
+      button.onclick = () => selectStation(button.dataset.station);
+    });
+    $$('.view-switch button').forEach(button => {
+      button.onclick = () => {
+        const mode = button.dataset.mapMode;
+        if (mode === 'explore') {
+          state.tab = null;
+          resetMap();
+        }
+        setMapMode(mode, mode !== 'explore');
+      };
+    });
+    $('#lab').addEventListener('close', () => {
+      window.speechSynthesis?.cancel();
+      $('#startLesson')?.focus({ preventScroll: true });
+    });
+    paintMap();
+    setMapMode('explore');
+  </script>
+</body>
+</html>
